@@ -68,7 +68,18 @@ elif search_type == 'grid':
     # the best value is. How can we properly compare this?
     pass
 
+elif search_type == 'hyperopt':
+    import hyperopt as hp
+    from sklearn.model_selection import cross_val_score
+    from sklearn.utils import clone
+    def f_opt(**params):
+        p = clone(pipeline)
 
+        scores = cross_val_score(p, newsgroups_train.data,
+                                            newsgroups_train.target,
+                                            cv=cv, n_jobs=10)
+        return scores.mean()
+        
 
 
 np.save('data/score_newsgroups_%s_%s.npy' % (classifier_type, search_type),
