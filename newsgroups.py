@@ -3,7 +3,7 @@
 import numpy as np
 import sys
 
-NJOBS = 2
+NJOBS = -1
 
 # Data
 from sklearn.datasets import fetch_20newsgroups
@@ -30,6 +30,8 @@ elif classifier_type == 'sgd':
     clf = SGDClassifier(loss='hinge', penalty='elasticnet')
     param_grid = dict(classifier__alpha=np.logspace(-4, 4, 1000),
                         classifier__l1_ratio=np.linspace(0, 1, 1000))
+    param_grid_skopt = dict(
+        classifier__alpha=(1e-4, 1e4, 'log-uniform'), classifier__l1_ratio=(0, 1, 'uniform'))
 
 
 # Pipeline
@@ -55,8 +57,8 @@ if search_type == 'random':
     from sklearn.model_selection import RandomizedSearchCV
 
     hyperparam_searcher = RandomizedSearchCV(
-        pipeline, param_grid, n_iter=10, cv=cv,
-        scoring='accuracy', verbose=1000, n_jobs=NJOBS)
+        pipeline, param_grid, n_iter=100, cv=cv,
+        scoring='accuracy', verbose=1, n_jobs=NJOBS)
 
     hyperparam_searcher.fit(newsgroups_train.data,
                             newsgroups_train.target)
@@ -69,8 +71,8 @@ elif search_type == 'skopt':
     from skopt import BayesSearchCV
 
     hyperparam_searcher = BayesSearchCV(
-        pipeline, param_grid, n_iter=10, cv=cv,
-        scoring='accuracy', verbose=1000, n_jobs=NJOBS)
+        pipeline, param_grid_skopt, n_iter=10, cv=cv,
+        scoring='accuracy', verbose=1, n_jobs=NJOBS)
 
     hyperparam_searcher.fit(newsgroups_train.data,
                             newsgroups_train.target)
