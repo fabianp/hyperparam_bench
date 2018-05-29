@@ -1,6 +1,7 @@
 # Twenty newsgroups hyperoptimization benchmark
 
 import numpy as np
+import sys
 
 
 # Data
@@ -16,7 +17,7 @@ vectorizer = TfidfVectorizer()
 
 
 # Classifier
-classifier_type = 'sgd'
+classifier_type = sys.argv[1]
 
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import SGDClassifier
@@ -43,7 +44,7 @@ cv = StratifiedShuffleSplit(random_state=0)
 
 # Grid searches
 
-search_type = "random"
+search_type = sys.argv[2]
 
 # ^ we might want to make this a distribution?
 
