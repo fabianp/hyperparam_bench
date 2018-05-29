@@ -3,6 +3,7 @@
 import numpy as np
 import sys
 
+NJOBS = 5
 
 # Data
 from sklearn.datasets import fetch_20newsgroups
@@ -53,12 +54,9 @@ search_type = sys.argv[2]
 if search_type == 'random':
     from sklearn.model_selection import RandomizedSearchCV
 
-    hyperparam_searcher = RandomizedSearchCV(pipeline, param_grid,
-                                            n_iter=100,
-                                            cv=cv,
-                                        scoring='accuracy',
-                                        verbose=1000,
-                                        n_jobs=10)
+    hyperparam_searcher = RandomizedSearchCV(
+        pipeline, param_grid, n_iter=100, cv=cv,
+        scoring='accuracy', verbose=1000, n_jobs=NJOBS)
 
     hyperparam_searcher.fit(newsgroups_train.data,
                             newsgroups_train.target)
@@ -67,7 +65,8 @@ elif search_type == 'grid':
     # This simply depends on where in the enumeration
     # the best value is. How can we properly compare this?
     pass
-
+elif search_type == 'skopt':
+    pass
 elif search_type == 'hyperopt':
     import hyperopt as hp
     from sklearn.model_selection import cross_val_score
@@ -77,7 +76,7 @@ elif search_type == 'hyperopt':
 
         scores = cross_val_score(p, newsgroups_train.data,
                                             newsgroups_train.target,
-                                            cv=cv, n_jobs=10)
+                                            cv=cv, n_jobs=NJOBS)
         return scores.mean()
         
 
