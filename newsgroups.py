@@ -4,6 +4,7 @@ import numpy as np
 import sys
 
 NJOBS = -1
+SEED = 0
 
 from newsgroups_data import get_newsgroups_info
 
@@ -69,7 +70,7 @@ if search_type == 'random':
 
     hyperparam_searcher = RandomizedSearchCV(
         pipeline, param_grid, n_iter=100, cv=cv,
-        scoring='accuracy', verbose=1, n_jobs=NJOBS)
+        scoring='accuracy', verbose=1, n_jobs=NJOBS, random_state=SEED)
 
     hyperparam_searcher.fit(Xtrain, ytrain)
 
@@ -82,7 +83,7 @@ elif search_type == 'skopt':
 
     hyperparam_searcher = BayesSearchCV(
         pipeline, param_grid_skopt, n_iter=100, cv=cv,
-        scoring='accuracy', verbose=1, n_jobs=NJOBS, random_state=0)
+        scoring='accuracy', verbose=1, n_jobs=NJOBS, random_state=SEED)
 
     hyperparam_searcher.fit(Xtrain, ytrain)
 
