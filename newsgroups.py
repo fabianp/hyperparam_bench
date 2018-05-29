@@ -71,8 +71,8 @@ elif search_type == 'skopt':
     from skopt import BayesSearchCV
 
     hyperparam_searcher = BayesSearchCV(
-        pipeline, param_grid_skopt, n_iter=10, cv=cv,
-        scoring='accuracy', verbose=1, n_jobs=NJOBS)
+        pipeline, param_grid_skopt, n_iter=100, cv=cv,
+        scoring='accuracy', verbose=1, n_jobs=NJOBS, random_state=0)
 
     hyperparam_searcher.fit(newsgroups_train.data,
                             newsgroups_train.target)
