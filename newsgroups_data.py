@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import stats
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -31,7 +32,7 @@ def _get_sgd_clf():
 
     hyperparams = dict(
         hyperparams_skopt=dict(
-                    classifier__alpha=(-3, 5, 'loguniform'),
+                    classifier__alpha=(1e-3, 1e5, 'log-uniform'),
                     classifier__l1_ratio=(0, 1, 'uniform')),
         hyperparams_hyperopt=dict(
                     classifier__alpha=hp.loguniform('alpha', -3, 5),
@@ -51,11 +52,11 @@ def _get_mnb_clf():
 
     hyperparams = dict(
         hyperparams_skopt=dict(
-                    classifier__alpha=(-3, 5, 'loguniform'),
+                    classifier__alpha=(1e-3, 1e5, 'log-uniform')),
         hyperparams_hyperopt=dict(
-                    classifier__alpha=hp.loguniform('alpha', -3, 5),
+                    classifier__alpha=hp.loguniform('alpha', -3, 5)),
         hyperparams_random_search=dict(
-                    classifier__alpha=np.nan, #expon(something)
+                    classifier__alpha=stats.expon(), #expon(something)
             ))
     return pipeline, hyperparams
 
