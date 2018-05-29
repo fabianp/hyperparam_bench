@@ -5,45 +5,56 @@ import sys
 
 NJOBS = -1
 
-# Data
-from sklearn.datasets import fetch_20newsgroups
-categories = None
-newsgroups_train = fetch_20newsgroups(categories=categories,
-                    subset='train', remove=('headers', 'footers', 'quotes'))
+from newsgroups_data import get_newsgroups_info
+
+newsgroups_info = get_newsgroups_info()
+Xtrain, ytrain, cv, classifiers = (newsgroups_info[item]
+            for item in ('Xtrain', 'ytrain', 'cv', 'classifiers'))
+
+## Data
+#from sklearn.datasets import fetch_20newsgroups
+#categories = None
+#newsgroups_train = fetch_20newsgroups(categories=categories,
+#                    subset='train', remove=('headers', 'footers', 'quotes'))
 
 
-# Preproc
-from sklearn.feature_extraction.text import TfidfVectorizer
-vectorizer = TfidfVectorizer()
+## Preproc
+#from sklearn.feature_extraction.text import TfidfVectorizer
+#vectorizer = TfidfVectorizer()
 
 
 # Classifier
 classifier_type = sys.argv[1]
 
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.linear_model import SGDClassifier
-
+#from sklearn.naive_bayes import MultinomialNB
+#from sklearn.linear_model import SGDClassifier
+#
 if classifier_type == 'mnb':
-    clf = MultinomialNB()
-    param_grid = dict(classifier__alpha=np.logspace(-3, 3, 1000))
+#    clf = MultinomialNB()
+#    param_grid = dict(classifier__alpha=np.logspace(-3, 3, 1000))
+    pipeline, param_grids = classifiers[1]
 elif classifier_type == 'sgd':
-    clf = SGDClassifier(loss='hinge', penalty='elasticnet')
-    param_grid = dict(classifier__alpha=np.logspace(-4, 4, 1000),
-                        classifier__l1_ratio=np.linspace(0, 1, 1000))
-    param_grid_skopt = dict(
-        classifier__alpha=(1e-4, 1e4, 'log-uniform'), classifier__l1_ratio=(0, 1, 'uniform'))
+#    clf = SGDClassifier(loss='hinge', penalty='elasticnet')
+#    param_grid = dict(classifier__alpha=np.logspace(-4, 4, 1000),
+#                        classifier__l1_ratio=np.linspace(0, 1, 1000))
+#    param_grid_skopt = dict(
+#        classifier__alpha=(1e-4, 1e4, 'log-uniform'), classifier__l1_ratio=(0, 1, 'uniform'))
+    pipeline, param_grids = classifiers[0]
 
+param_grid = param_grids['hyperparams_random_search']
+param_grid_skopt = param_grids['hyperparams_skopt']
+param_grid_hyperopt = param_grids['hyperparams_hyperopt']
 
-# Pipeline
-from sklearn.pipeline import Pipeline
-pipeline = Pipeline((('vectorizer', vectorizer),
-                    ('classifier', clf)))
+## Pipeline
+#from sklearn.pipeline import Pipeline
+#pipeline = Pipeline((('vectorizer', vectorizer),
+#                    ('classifier', clf)))
+#
 
-
-# Cross validation splits
-from sklearn.model_selection import StratifiedShuffleSplit, ShuffleSplit
-cv = StratifiedShuffleSplit(random_state=0)
-
+## Cross validation splits
+#from sklearn.model_selection import StratifiedShuffleSplit, ShuffleSplit
+#cv = StratifiedShuffleSplit(random_state=0)
+#
 
 # Grid searches
 
@@ -60,8 +71,7 @@ if search_type == 'random':
         pipeline, param_grid, n_iter=100, cv=cv,
         scoring='accuracy', verbose=1, n_jobs=NJOBS)
 
-    hyperparam_searcher.fit(newsgroups_train.data,
-                            newsgroups_train.target)
+    hyperparam_searcher.fit(Xtrain, ytrain)
 
 elif search_type == 'grid':
     # This simply depends on where in the enumeration
@@ -74,8 +84,8 @@ elif search_type == 'skopt':
         pipeline, param_grid_skopt, n_iter=10, cv=cv,
         scoring='accuracy', verbose=1, n_jobs=NJOBS)
 
-    hyperparam_searcher.fit(newsgroups_train.data,
-                            newsgroups_train.target)
+    hyperparam_searcher.fit(Xtrain, ytrain)
+
 elif search_type == 'hyperopt':
     import hyperopt as hp
     from sklearn.model_selection import cross_val_score
@@ -91,9 +101,7 @@ elif search_type == 'hyperopt':
         params = dict(zip(param_names, param_tuple))
         p = clone(pipeline)
         p.set_params(**params)
-        scores = cross_val_score(p, newsgroups_train.data,
-                                            newsgroups_train.target,
-                                            cv=cv, n_jobs=NJOBS)
+        scores = cross_val_score(p, Xtrain, ytrain, cv=cv, n_jobs=NJOBS)
         inputs.append(param_tuple)
         output = scores.mean()
         outputs.append(output)
