@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -68,7 +69,7 @@ def get_newsgroups_info():
 
     output = dict(Xtrain=Xtrain,
                     ytrain=ytrain,
-                    cv=cv
+                    cv=cv,
                     classifiers=[sgd, mnb])
     return output
 
