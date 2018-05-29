@@ -22,7 +22,7 @@ if algo == 'random':
     # run randomized search
     n_iter_search = 20
     random_search = model_selection.RandomizedSearchCV(
-        clf, param_distributions=param_dist, n_iter=n_iter_search)
+        clf, param_distributions=param_dist, cv=cv, n_iter=n_iter_search)
     random_search.fit(X, y)
 
     if not os.path.exists('data'):
