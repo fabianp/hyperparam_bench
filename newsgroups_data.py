@@ -19,8 +19,8 @@ def _get_data():
     return newsgroups_train.data, newsgroups_train.target
 
 
-def _get_cv():
-    cv = StratifiedShuffleSplit(random_state=0)
+def _get_cv(seed):
+    cv = StratifiedShuffleSplit(random_state=seed)
     return cv
 
 
@@ -61,10 +61,10 @@ def _get_mnb_clf():
     return pipeline, hyperparams
 
 
-def get_newsgroups_info():
+def get_newsgroups_info(seed):
 
     Xtrain, ytrain = _get_data()
-    cv = _get_cv()
+    cv = _get_cv(seed)
     sgd = _get_sgd_clf()
     mnb = _get_mnb_clf()
 
