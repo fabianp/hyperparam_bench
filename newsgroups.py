@@ -115,7 +115,7 @@ for seed in range(10):
 #        space = (hp.loguniform('alpha', -5, 10),
 #                 hp.uniform('l1_ratio', 0, 1))
 
-        best = fmin(f_opt, space=param_values, algo=tpe.suggest, max_evals=5)
+        best = fmin(f_opt, space=param_values, algo=tpe.suggest, max_evals=100)
         # Do some hacky stuff to be able to use the save code below :D
         hyperparam_searcher = lambda x: None
         hyperparam_searcher.cv_results_ = dict(mean_test_score=np.array(outputs),
