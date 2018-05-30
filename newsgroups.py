@@ -122,8 +122,8 @@ for seed in range(10):
                              params=[dict(zip(param_names, values))
                                  for values in inputs])
 
-    np.save('data/score_newsgroups_%s_%s_%s.npy' % (classifier_type, search_type),
-            hyperparam_searcher.cv_results_['mean_test_score'], seed)
+    np.save('data/score_newsgroups_%s_%s_%s.npy' % (classifier_type, search_type, seed),
+            hyperparam_searcher.cv_results_['mean_test_score'])
     np.save('data/parameters_newsgroups_%s_%s_%s.npy' % (classifier_type,
         search_type, seed),
             hyperparam_searcher.cv_results_['params'])
