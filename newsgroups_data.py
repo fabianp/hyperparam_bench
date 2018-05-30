@@ -8,7 +8,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import StratifiedShuffleSplit
 
 from hyperopt import hp
-from scipy.stats import uniform, expon
+from scipy.stats import uniform
+from utils import loguniform
 
 __all__ = ['get_newsgroups_info']
 
@@ -38,7 +39,7 @@ def _get_sgd_clf():
                     classifier__alpha=hp.loguniform('alpha', -3, 5),
                     classifier__l1_ratio=hp.uniform('l1_ratio', 0, 1)),
         hyperparams_random_search=dict(
-                    classifier__alpha=np.nan, #expon(something)
+                    classifier__alpha=loguniform(1e-3, 1e5),
                     classifier__l1_ratio=uniform()
             ))
     return pipeline, hyperparams
@@ -56,7 +57,7 @@ def _get_mnb_clf():
         hyperparams_hyperopt=dict(
                     classifier__alpha=hp.loguniform('alpha', -3, 5)),
         hyperparams_random_search=dict(
-                    classifier__alpha=stats.expon(), #expon(something)
+                    classifier__alpha=loguniform(1e-3, 1e5),
             ))
     return pipeline, hyperparams
 
