@@ -1,9 +1,9 @@
 
 all:
-#	python newsgroups.py sgd random
-#	python newsgroups.py mnb random
-	python newsgroups.py sgd hyperopt
-	python newsgroups.py mnb hyperopt
-	python newsgroups.py sgd skopt
-	python newsgroups.py mnb skopt
+#	python benchmark.py sgd random
+#	python benchmark.py mnb random
+	python benchmark.py sgd hyperopt
+	python benchmark.py mnb hyperopt
+	python benchmark.py sgd skopt
+	python benchmark.py mnb skopt
 
