@@ -17,15 +17,17 @@ else:
 for seed in range(10):
 
     info = get_info(seed)
-    Xtrain, ytrain, cv, classifiers = (info[item]
-                for item in ('Xtrain', 'ytrain', 'cv', 'classifiers'))
+    Xtrain, ytrain, cv, classifiers, scoring = (info[item]
+                for item in ('Xtrain', 'ytrain', 'cv', 'classifiers', 'scoring'))
 
     classifier_type = sys.argv[2]
 
-    if classifier_type == 'mnb':
-       pipeline, param_grids = classifiers[1]
-    elif classifier_type == 'sgd':
-       pipeline, param_grids = classifiers[0]
+#    if classifier_type == 'mnb':
+#       pipeline, param_grids = classifiers[1]
+#    elif classifier_type == 'sgd':
+#       pipeline, param_grids = classifiers[0]
+
+    pipeline, param_grids = classifiers[classifier_type]
 
     param_grid = param_grids['hyperparams_random_search']
     param_grid_skopt = param_grids['hyperparams_skopt']
@@ -39,7 +41,8 @@ for seed in range(10):
 
         hyperparam_searcher = RandomizedSearchCV(
             pipeline, param_grid, n_iter=100, cv=cv,
-            scoring='accuracy', verbose=1, n_jobs=NJOBS, random_state=seed)
+            scoring=scoring,
+            verbose=1, n_jobs=NJOBS, random_state=seed)
 
         hyperparam_searcher.fit(Xtrain, ytrain)
 
@@ -52,7 +55,7 @@ for seed in range(10):
 
         hyperparam_searcher = BayesSearchCV(
             pipeline, param_grid_skopt, n_iter=100, cv=cv,
-            scoring='accuracy', verbose=1, n_jobs=NJOBS, random_state=seed)
+            scoring=scoring, verbose=1, n_jobs=NJOBS, random_state=seed)
 
         hyperparam_searcher.fit(Xtrain, ytrain)
 
@@ -71,7 +74,7 @@ for seed in range(10):
             params = dict(zip(param_names, param_tuple))
             p = clone(pipeline)
             p.set_params(**params)
-            scores = cross_val_score(p, Xtrain, ytrain, cv=cv, n_jobs=NJOBS)
+            scores = cross_val_score(p, Xtrain, ytrain, cv=cv, scoring=scoring, n_jobs=NJOBS)
             inputs.append(param_tuple)
             output = scores.mean()
             outputs.append(output)

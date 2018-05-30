@@ -72,7 +72,8 @@ def get_newsgroups_info(seed):
     output = dict(Xtrain=Xtrain,
                     ytrain=ytrain,
                     cv=cv,
-                    classifiers=[sgd, mnb])
+                    classifiers=dict(sgd=sgd, mnb=mnb),
+                    scoring='accuracy')
     return output
 
 

@@ -3,11 +3,12 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.linear_model import Ridge
 from utils import loguniform
 
+from hyperopt import hp
 
 def _get_data():
      dataset = fetch_california_housing()
      X, y = dataset.data, dataset.target
-     return X, 
+     return X, y
 
 
 def _get_cv(seed):
@@ -38,7 +39,7 @@ def get_housing_info(seed):
     ridge = _get_ridge()
 
     output = dict(Xtrain=Xtrain, ytrain=ytrain,
-                    cv=cv, classifiers=[ridge])
+                    cv=cv, classifiers=dict(ridge=ridge), scoring='r2')
     return output
 
 
