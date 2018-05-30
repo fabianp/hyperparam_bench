@@ -95,8 +95,8 @@ for seed in range(10):
         from sklearn.base import clone
         from hyperopt import fmin, tpe, hp, STATUS_OK
 
-        param_names = list(param_grid.keys())
-        param_values_ = [param_grid[key] for key in param_names]
+        param_names = list(param_grid_hyperopt.keys())
+        param_values = [param_grid_hyperopt[key] for key in param_names]
 
         inputs = []
         outputs = []
@@ -110,24 +110,23 @@ for seed in range(10):
             outputs.append(output)
             return {'loss': output, 'status': STATUS_OK}
 
-        # Have to set this here by hand. Would be great if it could be inferred
-        # from the specs in param_grid ...
-        space = (hp.loguniform('alpha', -5, 10),
-                 hp.uniform('l1_ratio', 0, 1))
+#        # Have to set this here by hand. Would be great if it could be inferred
+#        # from the specs in param_grid ...
+#        space = (hp.loguniform('alpha', -5, 10),
+#                 hp.uniform('l1_ratio', 0, 1))
 
-        best = fmin(f_opt, space=space, algo=tpe.suggest, max_evals=100)
+        best = fmin(f_opt, space=param_values, algo=tpe.suggest, max_evals=100)
         # Do some hacky stuff to be able to use the save code below :D
         hyperparam_searcher = lambda x: None
         hyperparam_searcher.cv_results_ = dict(mean_test_score=np.array(outputs),
                              params=[dict(zip(param_names, values))
                                  for values in inputs])
 
-    np.save('data/score_newsgroups_%s_%s_%s.npy' % (classifier_type, search_type, seed),
+    np.save('data/score_newsgroups_%s_%s_%s.npy' % (classifier_type,
+                                                    search_type,
+                                                    seed),
             hyperparam_searcher.cv_results_['mean_test_score'])
     np.save('data/parameters_newsgroups_%s_%s_%s.npy' % (classifier_type,
-        search_type, seed),
-            hyperparam_searcher.cv_results_['params'])
-
-
-
+                                                        search_type,
+                                                        seed))
 
