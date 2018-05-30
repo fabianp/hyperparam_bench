@@ -5,16 +5,22 @@ import sys
 
 NJOBS = -1
 
-from newsgroups_data import get_newsgroups_info
+dataset_name = sys.argv[1]
+if dataset_name == 'newsgroups':
+    from newsgroups_data import get_newsgroups_info as get_info
+elif dataset_name == 'housing':
+    from housing_data import get_housing_info as get_info
+else:
+    raise NotImplementedError(f"We don't have dataset {dataset_name} yet")
 
 
 for seed in range(10):
 
-    newsgroups_info = get_newsgroups_info(seed)
-    Xtrain, ytrain, cv, classifiers = (newsgroups_info[item]
+    info = get_info(seed)
+    Xtrain, ytrain, cv, classifiers = (info[item]
                 for item in ('Xtrain', 'ytrain', 'cv', 'classifiers'))
 
-    classifier_type = sys.argv[1]
+    classifier_type = sys.argv[2]
 
     if classifier_type == 'mnb':
        pipeline, param_grids = classifiers[1]
@@ -25,7 +31,7 @@ for seed in range(10):
     param_grid_skopt = param_grids['hyperparams_skopt']
     param_grid_hyperopt = param_grids['hyperparams_hyperopt']
 
-    search_type = sys.argv[2]
+    search_type = sys.argv[3]
 
 
     if search_type == 'random':
@@ -78,11 +84,13 @@ for seed in range(10):
                              params=[dict(zip(param_names, values))
                                  for values in inputs])
 
-    np.save('data/score_newsgroups_%s_%s_%s.npy' % (classifier_type,
+    np.save('data/score_%s_%s_%s_%s.npy' % (dataset_name,
+                                            classifier_type,
                                                     search_type,
                                                     seed),
             hyperparam_searcher.cv_results_['mean_test_score'])
-    np.save('data/parameters_newsgroups_%s_%s_%s.npy' % (classifier_type,
+    np.save('data/parameters_%s_%s_%s_%s.npy' % (dataset_name,
+                                                classifier_type,
                                                         search_type,
                                                         seed),
             hyperparam_searcher.cv_results_['params'])
