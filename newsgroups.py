@@ -128,5 +128,6 @@ for seed in range(10):
             hyperparam_searcher.cv_results_['mean_test_score'])
     np.save('data/parameters_newsgroups_%s_%s_%s.npy' % (classifier_type,
                                                         search_type,
-                                                        seed))
+                                                        seed),
+            hyperparam_searcher.cv_results_['params'])
 
