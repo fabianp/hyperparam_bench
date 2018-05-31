@@ -78,7 +78,7 @@ for seed in range(10):
             inputs.append(param_tuple)
             output = scores.mean()
             outputs.append(output)
-            return {'loss': output, 'status': STATUS_OK}
+            return {'loss': -output, 'status': STATUS_OK}
 
         best = fmin(f_opt, space=param_values, algo=tpe.suggest, max_evals=100)
         # Do some hacky stuff to be able to use the save code below :D
