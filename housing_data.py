@@ -3,6 +3,9 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.linear_model import Ridge
 from utils import loguniform
 
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+
 from hyperopt import hp
 
 def _get_data():
@@ -31,6 +34,20 @@ def _get_ridge():
                 )
             )
     return est, hyperparams
+
+
+def _get_rf(seed):
+    est = RandomForestRegressor(random_state=seed, n_jobs=-1)
+    hyperparams = dict(
+            hyperparams_random_search=dict(
+                max_depth=(2, 5, 10, 20, None),
+                n_estimators=(10, 20, 50, 100),
+                max_features=('sqrt', 'log2', .2, .5, .9, None),
+                min_samples_leaf=(1, 2, 5, 10, 20),
+                bootstrap=(True, False),
+                ),
+            )
+    
 
 
 def get_housing_info(seed):

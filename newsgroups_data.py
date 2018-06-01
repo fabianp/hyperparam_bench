@@ -26,7 +26,7 @@ def _get_cv(seed):
 
 
 def _get_sgd_clf():
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(max_features=int(1e5))
     clf = SGDClassifier(loss='hinge', penalty='elasticnet')
     pipeline = Pipeline((('vectorizer', vectorizer),
                     ('classifier', clf)))
@@ -39,6 +39,14 @@ def _get_sgd_clf():
                     classifier__alpha=hp.loguniform('alpha', -3, 5),
                     classifier__l1_ratio=hp.uniform('l1_ratio', 0, 1)),
         hyperparams_random_search=dict(
+                    vectorizer__ngram_range=((1, 1), (1, 2), (1, 3)),
+                    vectorizer__max_df=(.7, .8, .9, 1.),
+                    vectorizer__min_df=(1, 2, 3, 5, .1),
+                    vectorizer__binary=(True, False),
+                    vectorizer__use_idf=(True, False),
+                    vectorizer__norm=('l1', 'l2', None),
+                    vectorizer__smooth_idf=(True, False),
+                    vectorizer__sublinear_tf=(True, False),
                     classifier__alpha=loguniform(1e-3, 1e5),
                     classifier__l1_ratio=uniform()
             ))
